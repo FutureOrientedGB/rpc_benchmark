@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package bidirectional;
+
+
+message MessageRequest {
+  int32 version = 1;
+  string text = 2;
+  bytes content = 3;
+}
+
+message MessageResponse {
+  int32 version = 1;
+  string text = 2;
+  bytes content = 3;
+}
+
+
+message StreamRequest {
+  int32 version = 1;
+  string text = 2;
+  bytes content = 3;
+}
+
+message StreamResponse {
+  int32 version = 1;
+  string text = 2;
+  bytes content = 3;
+}
+
+
+
+service BidirectionalService {
+  rpc send_message(MessageRequest) returns (MessageResponse);
+  rpc send_stream(stream StreamRequest) returns (stream StreamResponse);
+}
