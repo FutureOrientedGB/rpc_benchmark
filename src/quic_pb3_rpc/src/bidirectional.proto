@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package bidirectional;
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+enum RpcNamespace {
+  // begin
+  RpcNamespaceBegin = 0;
+  // struct TestService {}
+  // struct TestClient {}
+  Test = 1;
+  // end
+  RpcNamespaceEnd = 2;
+}
+
+enum RpcService {
+  // begin
+  RpcServiceBegin = 0;
+  // struct TestService {
+  //    async Message(request: &mut MessageRequest, response: &mut MessageResponse) {}
+  // }
+  // struct TestClient {
+  //    async Message(request: &mut MessageRequest) -> MessageResponse {}
+  // }
+  TestUnaryMessage = 1;
+  // struct TestService {
+  //    async Stream(request: &mut std::mpsc::Receiver<MessageRequest>, response: &mut MessageResponse) {}
+  // }
+  // struct TestClient {
+  //    async Stream(request: &mut std::mpsc::Receiver<MessageRequest>) -> MessageResponse {}
+  // }
+  TestClientStreamStream = 2;
+  // struct TestService {
+  //    async Message(request: &mut MessageRequest>, response: &mut std::mpsc::Receiver<MessageResponse>) {}
+  // }
+  // struct TestClient {
+  //    async Message(request: &mut MessageRequest>) -> std::mpsc::Receiver<MessageResponse> {}
+  // }
+  TestServerStreamStream = 3;
+  // struct TestService {
+  //     async fn Message(request: &mut std::mpsc::Receiver<MessageRequest>, response: &mut std::mpsc::Receiver<MessageResponse>) {}
+  // }
+  // struct TestClient {
+  //     async fn Stream(request: &mut std::mpsc::Receiver<MessageRequest>) -> std::mpsc::Receiver<StreamResponse> {}
+  // }
+  TestBidirectionalStream = 4;
+  // end
+  RpcServiceEnd = 5;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+message MessageRequest {
+  string text = 1;
+  bytes content = 2;
+}
+
+message StreamRequest {
+  string text = 1;
+  bytes content = 2;
+}
+
+message MessageResponse {
+  string text = 1;
+  bytes content = 2;
+}
+
+message StreamResponse {
+  string text = 1;
+  bytes content = 2;
+}
+
+message RpcRequest {
+  uint32 version = 1;
+  RpcNamespace ns = 2;
+  RpcService func = 3;
+  oneof payload {
+    MessageRequest message = 4;
+    StreamRequest stream = 5;
+  }
+}
+
+message RpcResponse {
+  uint32 version = 1;
+  RpcNamespace ns = 2;
+  RpcService func = 3;
+  oneof payload {
+    MessageResponse message = 4;
+    StreamResponse stream = 5;
+  }
+}
