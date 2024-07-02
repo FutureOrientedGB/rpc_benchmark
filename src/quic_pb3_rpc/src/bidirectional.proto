@@ -5,49 +5,41 @@ package bidirectional;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-enum RpcNamespace {
-  // begin
-  RpcNamespaceBegin = 0;
+enum RpcService {
   // struct TestService {}
   // struct TestClient {}
-  Test = 1;
-  // end
-  RpcNamespaceEnd = 2;
+  Test = 0;
 }
 
-enum RpcService {
-  // begin
-  RpcServiceBegin = 0;
+enum RpcFunction {
   // struct TestService {
-  //    async Message(request: &mut MessageRequest, response: &mut MessageResponse) {}
+  //    async test_unary(request: &mut MessageRequest, response: &mut MessageResponse) {}
   // }
   // struct TestClient {
-  //    async Message(request: &mut MessageRequest) -> MessageResponse {}
+  //    async test_unary(request: &mut MessageRequest) -> MessageResponse {}
   // }
-  TestUnaryMessage = 1;
+  UnaryTest = 0;
   // struct TestService {
-  //    async Stream(request: &mut std::mpsc::Receiver<MessageRequest>, response: &mut MessageResponse) {}
+  //    async test_client_stream(request: &mut std::mpsc::Receiver<MessageRequest>, response: &mut MessageResponse) {}
   // }
   // struct TestClient {
-  //    async Stream(request: &mut std::mpsc::Receiver<MessageRequest>) -> MessageResponse {}
+  //    async test_client_stream(request: &mut std::mpsc::Receiver<MessageRequest>) -> MessageResponse {}
   // }
-  TestClientStreamStream = 2;
+  ClientStreamTest = 1;
   // struct TestService {
-  //    async Message(request: &mut MessageRequest>, response: &mut std::mpsc::Receiver<MessageResponse>) {}
+  //    async test_server_stream(request: &mut MessageRequest>, response: &mut std::mpsc::Receiver<MessageResponse>) {}
   // }
   // struct TestClient {
-  //    async Message(request: &mut MessageRequest>) -> std::mpsc::Receiver<MessageResponse> {}
+  //    async test_server_stream(request: &mut MessageRequest>) -> std::mpsc::Receiver<MessageResponse> {}
   // }
-  TestServerStreamStream = 3;
+  ServerStreamTest = 2;
   // struct TestService {
-  //     async fn Message(request: &mut std::mpsc::Receiver<MessageRequest>, response: &mut std::mpsc::Receiver<MessageResponse>) {}
+  //     async fn test_bidirectional_stream(request: &mut std::mpsc::Receiver<MessageRequest>, response: &mut std::mpsc::Receiver<MessageResponse>) {}
   // }
   // struct TestClient {
-  //     async fn Stream(request: &mut std::mpsc::Receiver<MessageRequest>) -> std::mpsc::Receiver<StreamResponse> {}
+  //     async fn test_bidirectional_stream(request: &mut std::mpsc::Receiver<MessageRequest>) -> std::mpsc::Receiver<StreamResponse> {}
   // }
-  TestBidirectionalStream = 4;
-  // end
-  RpcServiceEnd = 5;
+  BidirectionalStreamTest = 3;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -74,8 +66,8 @@ message StreamResponse {
 
 message RpcRequest {
   uint32 version = 1;
-  RpcNamespace ns = 2;
-  RpcService func = 3;
+  RpcService service = 2;
+  RpcFunction func = 3;
   oneof payload {
     MessageRequest message = 4;
     StreamRequest stream = 5;
@@ -84,10 +76,18 @@ message RpcRequest {
 
 message RpcResponse {
   uint32 version = 1;
-  RpcNamespace ns = 2;
-  RpcService func = 3;
+  RpcService service = 2;
+  RpcFunction func = 3;
   oneof payload {
     MessageResponse message = 4;
     StreamResponse stream = 5;
   }
 }
+
+
+// service TestService {
+//   rpc test_unary(RpcRequest) returns (RpcResponse);
+//   rpc test_client_stream(stream RpcRequest) returns (RpcResponse);
+//   rpc test_server_stream(RpcRequest) returns (stream RpcResponse);
+//   rpc test_bidirectional_stream(stream RpcRequest) returns (stream RpcResponse);
+// }
