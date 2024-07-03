@@ -5,18 +5,13 @@ edition = "2021"
 
 
 [[bin]]
-name = "parser"
-path = "src/parser.rs"
-
-
-[[bin]]
 name = "quic_pb3_rpc_server"
-path = "src/server.rs"
+path = "src/my_rpc_server.rs"
 
 
 [[bin]]
 name = "quic_pb3_rpc_client"
-path = "src/client.rs"
+path = "src/my_rpc_client.rs"
 
 
 

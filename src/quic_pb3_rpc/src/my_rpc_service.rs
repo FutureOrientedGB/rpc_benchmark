@@ -43,6 +43,12 @@ impl QuickRpcService<bidirectional::RpcRequest, bidirectional::RpcResponse> for 
 }
 
 impl MyRpcService {
+    pub fn accept_incoming_connections(incoming_connection: quinn::Incoming) {
+        tokio::spawn(async move {
+            Self::on_connect(incoming_connection).await;
+        });
+    }
+
     async fn unary_test(send_stream: &mut quinn::SendStream, request: bidirectional::RpcRequest) {}
 
     async fn client_stream_test(

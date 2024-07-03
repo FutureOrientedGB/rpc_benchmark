@@ -1,5 +1,5 @@
 // std
-use std::{error::Error, net::ToSocketAddrs, str::FromStr, sync::Arc};
+use std::{net::ToSocketAddrs, str::FromStr, sync::Arc};
 
 // anyhow
 use anyhow::{anyhow, Result};
@@ -14,12 +14,8 @@ use quinn_proto::crypto::rustls::QuicClientConfig;
 // rustls
 use rustls::pki_types::{CertificateDer, ServerName, UnixTime};
 
-// time
-use time::{macros::format_description, UtcOffset};
-
 // tracing
 use tracing;
-use tracing_subscriber::{self, fmt::time::OffsetTime};
 
 // url
 use url::Url;
@@ -32,7 +28,7 @@ pub trait QuickRpcClient<
 >
 {
     async fn connect(host: String, port: u16) -> Result<(Endpoint, Connection)> {
-        let endpoint = Self::setup()?;
+        let endpoint = Self::setup().await?;
 
         // prepare url
         let url = Url::from_str(&format!("https://{}:{}/", host, port)).unwrap();
@@ -46,7 +42,7 @@ pub trait QuickRpcClient<
         let connection = endpoint
             .connect(addr, host)?
             .await
-            .map_err(|e| anyhow!("failed to connect: {}", e));
+            .map_err(|e| anyhow!("failed to connect: {}", e))?;
 
         Ok((endpoint, connection))
     }
@@ -105,7 +101,7 @@ pub trait QuickRpcClient<
             return Err(e.into());
         }
 
-        match RpcResponseType::decode(payload) {
+        match RpcResponseType::decode(&payload[..]) {
             Ok(resp) => {
                 return Ok(resp);
             }
@@ -120,7 +116,7 @@ pub trait QuickRpcClient<
     }
 
     async fn unary_request(
-        connection: Connection,
+        connection: &Connection,
         request: RpcRequestType,
     ) -> Result<RpcResponseType> {
         // open streams
@@ -131,16 +127,15 @@ pub trait QuickRpcClient<
             .unwrap();
 
         // write
-        Self::write_request(send_stream, request).await;
+        Self::write_request(&mut send_stream, request).await;
 
         // read
-        Self::read_response(recv_stream).await;
+        Self::read_response(&mut recv_stream).await
     }
 
     async fn client_stream_request(
-        connection: Connection,
-        requests: std::sync::mpsc::Receiver<Option<RpcRequestType>>,
-    ) -> Result<RpcResponseType> {
+        connection: &Connection,
+    ) -> Result<(RpcResponseType, quinn::SendStream)> {
         // open streams
         let (mut send_stream, mut recv_stream) = connection
             .open_bi()
@@ -148,19 +143,14 @@ pub trait QuickRpcClient<
             .map_err(|e| anyhow!("failed to open stream: {}", e))
             .unwrap();
 
-        // write
-        while let Some(req) = requests.recv() {
-            Self::write_request(send_stream, req).await;
-        }
-
         // read
-        Self::read_response(recv_stream).await;
+        Ok((Self::read_response(&mut recv_stream).await?, send_stream))
     }
 
     async fn server_stream_request(
-        connection: Connection,
+        connection: &Connection,
         request: RpcRequestType,
-    ) -> Result<std::sync::mpsc::Receiver<Option<RpcResponseType>>> {
+    ) -> Result<quinn::RecvStream> {
         // open streams
         let (mut send_stream, mut recv_stream) = connection
             .open_bi()
@@ -169,26 +159,14 @@ pub trait QuickRpcClient<
             .unwrap();
 
         // write
-        Self::write_request(send_stream, request).await;
+        Self::write_request(&mut send_stream, request).await;
 
-        // read
-        let (tx, rx) = std::sync::mpsc::channel();
-        tokio::spawn(async move {
-            while let Ok(resp) = Self::read_response(recv_stream).await {
-                tx.send(Some(resp)).unwrap();
-            }
-
-            // complete
-            tx.send(None);
-        });
-
-        Ok(rx)
+        Ok(recv_stream)
     }
 
-    async fn bidirectional_request(
-        connection: Connection,
-        requests: std::sync::mpsc::Receiver<Option<RpcRequestType>>,
-    ) -> Result<std::sync::mpsc::Receiver<Option<RpcResponseType>>> {
+    async fn bidirectional_stream_request(
+        connection: &Connection,
+    ) -> Result<(quinn::SendStream, quinn::RecvStream)> {
         // open streams
         let (mut send_stream, mut recv_stream) = connection
             .open_bi()
@@ -196,25 +174,7 @@ pub trait QuickRpcClient<
             .map_err(|e| anyhow!("failed to open stream: {}", e))
             .unwrap();
 
-        // write
-        tokio::spawn(async move {
-            while let Some(req) = requests.recv() {
-                Self::write_request(send_stream, req).await;
-            }
-        });
-
-        // read
-        let (tx, rx) = std::sync::mpsc::channel();
-        tokio::spawn(async move {
-            while let Ok(resp) = Self::read_response(recv_stream).await {
-                tx.send(Some(resp)).unwrap();
-            }
-
-            // complete
-            tx.send(None);
-        });
-
-        Ok(rx)
+        Ok((send_stream, recv_stream))
     }
 
     async fn setup() -> Result<Endpoint> {

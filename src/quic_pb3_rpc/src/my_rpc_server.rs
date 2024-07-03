@@ -21,8 +21,13 @@ pub mod bidirectional {
 }
 
 // my service
-pub mod quick_rpc_service;
+pub mod id_generator;
 pub mod my_rpc_service;
+pub mod object_pool;
+pub mod quick_rpc_service;
+use id_generator::IdGenerator;
+use my_rpc_service::MyRpcService;
+use object_pool::ObjectPool;
 
 
 
@@ -65,16 +70,12 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
         .init();
 
     let mut complete_flag = false;
-    my_rpc_service::MyRpcService::run_until_complete(
+    MyRpcService::run_until_complete(
         cli.host,
         cli.port,
         &complete_flag,
         cli.min_ms_per_loop,
-        |incoming_connection| {
-            tokio::spawn(async move {
-                my_rpc_service::MyRpcService::on_connect(incoming_connection).await;
-            });
-        },
+        MyRpcService::accept_incoming_connections,
     )
     .await;
     complete_flag = true;

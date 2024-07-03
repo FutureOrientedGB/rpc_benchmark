@@ -21,7 +21,7 @@ pub trait QuickRpcService<RpcRequestType: Default + prost::Message, RpcResponseT
         port: u16,
         complete_flag: &bool,
         min_ms_per_loop: u64,
-        on_connect_fn: fn(incoming_connection: quinn::Incoming),
+        accpet_incoming_connections_fn: fn(incoming_connection: quinn::Incoming),
     ) {
         if let Ok(endpoint) = Self::setup(host, port).await {
             while !complete_flag {
@@ -39,7 +39,7 @@ pub trait QuickRpcService<RpcRequestType: Default + prost::Message, RpcResponseT
                         // the endpoint is close
                         break;
                     }
-                    Ok(Some(incoming_connection)) => on_connect_fn(incoming_connection)
+                    Ok(Some(incoming_connection)) => accpet_incoming_connections_fn(incoming_connection)
                 }
             }
         }
