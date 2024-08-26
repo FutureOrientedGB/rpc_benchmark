@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RimiServer", "RimiServer\RimiServer.vcproj", "{A388D9A8-46B7-4546-A242-D2B5049FE819}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RimiClient", "RimiClient\RimiClient.vcproj", "{4ED60059-60C2-4D6C-8614-9F9CDF4ED818}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A388D9A8-46B7-4546-A242-D2B5049FE819}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A388D9A8-46B7-4546-A242-D2B5049FE819}.Debug|Win32.Build.0 = Debug|Win32
+		{A388D9A8-46B7-4546-A242-D2B5049FE819}.Release|Win32.ActiveCfg = Release|Win32
+		{A388D9A8-46B7-4546-A242-D2B5049FE819}.Release|Win32.Build.0 = Release|Win32
+		{4ED60059-60C2-4D6C-8614-9F9CDF4ED818}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4ED60059-60C2-4D6C-8614-9F9CDF4ED818}.Debug|Win32.Build.0 = Debug|Win32
+		{4ED60059-60C2-4D6C-8614-9F9CDF4ED818}.Release|Win32.ActiveCfg = Release|Win32
+		{4ED60059-60C2-4D6C-8614-9F9CDF4ED818}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

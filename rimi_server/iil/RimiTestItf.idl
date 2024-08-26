@@ -1,0 +1,68 @@
+#ifndef RIMITEST_IDL_
+#define RIMITEST_IDL_
+
+#include "RimiTestTypedefine.hpp"
+
+namespace demo 
+{
+    interface IServerManager;
+	interface IServerNotify;
+	interface IServerNotify2;
+	interface IObject;
+	interface IObjectMgr;
+
+    typedef boost::shared_ptr<IServerManager>	CSpIServerManager;
+	typedef boost::shared_ptr<IServerNotify>	CSpIServerNotify;
+	typedef boost::shared_ptr<IServerNotify2>	CSpIServerNotify2;
+	typedef boost::shared_ptr<IObject>			CSpIObject;
+	typedef boost::shared_ptr<IObjectMgr>		CSpIObjectMgr;
+
+    const std::string RIMI_ACCESSSTRING_SERVERMANAGER			= "/rimi/demo/servermanager";
+	const std::string RIMI_ACCESSSTRING_SERVERNOTIFY			= "/rimi/demo/servernotify";
+	const std::string RIMI_ACCESSSTRING_SERVERNOTIFY2			= "/rimi/demo/servernotify2";
+	const std::string RIMI_ACCESSSTRING_SERVEROBJECT			= "/rimi/demo/serverobject";
+	const std::string RIMI_ACCESSSTRING_SERVEROBJECTMGR			= "/rimi/demo/serverobjectmgr";
+
+	//远程函数调用接口
+    interface IServerManager
+    {
+        RIMI_INVOKE_ITF_DECLARE( IServerManager, 0x11, 0x29, 0x98, 0x0e, 0xdf, 0x67, 0x46, 0x44, 0x92, 0x54, 0x77, 0xbb, 0xa2, 0x5c, 0x90, 0x1b );
+
+		virtual bool funcAdd( in_ const uint32_t a, in_ const uint32_t b, out_ uint32_t &c, RIMI_INVOKE_PARAM ) = 0;
+		virtual bool funcMul( in_ const uint32_t a, in_ const uint32_t b, out_ uint32_t &c, RIMI_INVOKE_PARAM ) = 0;
+		virtual bool func3( inout_ std::vector<std::string> &res, RIMI_INVOKE_PARAM ) = 0;
+
+    };
+
+	//通知接口
+	interface IServerNotify
+	{
+		RIMI_NOTIFY_ITF_DECLARE( IServerNotify, 0x04, 0x6a, 0xcb, 0x00, 0xbc, 0xef, 0x12, 0x43, 0xbe, 0xdb, 0x21, 0x28, 0x22, 0x3a, 0xd9, 0x08 );
+
+		virtual bool funcNotify( in_ const uint32_t res, RIMI_NOTIFY_PARAM ) = 0;
+		virtual bool funcNotify1( in_ const std::string res, RIMI_NOTIFY_PARAM ) = 0;
+	};
+
+	interface IServerNotify2
+	{
+		RIMI_NOTIFY_ITF_DECLARE( IServerNotify2, 0x04, 0x6a, 0xdb, 0x00, 0xbc, 0xef, 0x12, 0x43, 0x3e, 0xdb, 0x21, 0x28, 0x22, 0x3a, 0xd9, 0x08 );
+
+		virtual bool funcNotify2( in_ const std::string res, RIMI_NOTIFY_PARAM ) = 0;
+	};
+	
+	interface IObject
+	{
+		RIMI_INVOKE_ITF_DECLARE( IObject, 0xF5, 0x99, 0x30, 0x8E, 0x51, 0xD6, 0x43, 0x39, 0x8E, 0x7D, 0x4C, 0xE5, 0x97, 0x00, 0x83, 0xCB );
+
+		virtual bool funcObject( in_ std::string &str, RIMI_INVOKE_PARAM ) = 0;
+	};
+	//客户端激活服务对象测试
+	interface IObjectMgr
+	{
+		RIMI_INVOKE_ITF_DECLARE( IObjectMgr, 0xC8, 0x1D, 0xD3, 0xF6, 0x11, 0x7A, 0x45, 0xc8, 0x81, 0xA3, 0x3E, 0x2B, 0x8D, 0x01, 0x88, 0x8E );
+
+		virtual boost::shared_ptr<IObject> funcGenObj( RIMI_INVOKE_PARAM ) = 0;
+	};
+}
+
+#endif

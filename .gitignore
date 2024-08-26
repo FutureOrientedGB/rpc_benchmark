@@ -31,8 +31,7 @@
 *.out
 *.app
 
-# project
-build/
-output/
-rundir/
+# project files
+project/
+vcpkg/
 target/
