@@ -8,33 +8,24 @@ project(${PROJECT_NAME})
 
 
 # find pkgconf
-set(PKG_CONFIG_EXECUTABLE $ENV{PKGCONF_EXE_PATH})
-set(PKG_CONFIG_PATH $ENV{PKGCONF_CFG_PATH})
 find_package(PkgConfig REQUIRED)
 
 # find zlib
-set(ZLIB_ROOT $ENV{VCPKG_LIB_PATH})
-set(ZLIB_INCLUDE_DIR $ENV{VCPKG_INCLUDE_PATH})
 find_package(ZLIB REQUIRED)
 
 # find fmt
-set(fmt_DIR $ENV{FMT_CMAKE_PATH})
 find_package(fmt CONFIG REQUIRED)
 
 # find spdlog
-set(spdlog_DIR $ENV{SPDLOG_CMAKE_PATH})
 find_package(spdlog CONFIG REQUIRED)
 
 # find openssl
-set(openssl_DIR $ENV{OPENSSL_CMAKE_PATH})
 find_package(openssl CONFIG REQUIRED)
 
 # find libevent
-set(Libevent_DIR $ENV{LIBEVENT_CMAKE_PATH})
 find_package(Libevent CONFIG REQUIRED)
 
 # find thrift
-set(thrift_DIR $ENV{THRIFT_CMAKE_PATH})
 find_package(thrift CONFIG REQUIRED)
 
 
@@ -69,14 +60,6 @@ add_executable(${PROJECT_NAME}
         WIN32
         ${HEADER_FILES}
         ${SOURCE_FILES}
-)
-
-
-# output dir
-set_target_properties(
-    ${PROJECT_NAME}
-    PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY $ENV{OUTPUT_EXE_DIR}
 )
 
 

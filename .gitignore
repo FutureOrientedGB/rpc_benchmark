@@ -31,7 +31,9 @@
 *.out
 *.app
 
+# Python
+__pycache__/
+
 # project files
-project/
-vcpkg/
+build/
 target/

@@ -32,6 +32,9 @@
     },
     {
       "name": "thrift"
+    },
+    {
+      "name": "pkgconf"
     }
   ],
   "overrides": [
@@ -78,6 +81,10 @@
     {
       "name": "thrift",
       "version": "0.20.0#1"
+    },
+    {
+      "name": "pkgconf",
+      "version": "2.3.0"
     }
   ]
 }
